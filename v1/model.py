@@ -11,6 +11,7 @@ from sklearn.utils import shuffle
 from ops import *
 from utils import *
 
+
 class MidiNet(object):
     def __init__(self, sess, is_crop=False,
                  batch_size=72, sample_size = 72, output_w=16,output_h=128,
@@ -45,20 +46,17 @@ class MidiNet(object):
         if not self.y_dim:
             self.d_bn3 = batch_norm(name='d_bn3')
 
-
         if self.prev_dim:
             self.g_prev_bn0 = batch_norm(name='g_prev_bn0')
             self.g_prev_bn1 = batch_norm(name='g_prev_bn1')
             self.g_prev_bn2 = batch_norm(name='g_prev_bn2')
             self.g_prev_bn3 = batch_norm(name='g_prev_bn3')
 
-
         self.g_bn0 = batch_norm(name='g_bn0')
         self.g_bn1 = batch_norm(name='g_bn1')
         self.g_bn2 = batch_norm(name='g_bn2')
         self.g_bn3 = batch_norm(name='g_bn3')
         self.g_bn4 = batch_norm(name='g_bn4')
-        
 
         self.dataset_name = dataset_name
         self.checkpoint_dir = checkpoint_dir
@@ -81,13 +79,12 @@ class MidiNet(object):
 
         self.z_sum = tf.summary.histogram("z", self.z)
 
-        
-        self.G = self.generator(self.z, self.y, self.prev_bar)
         self.D, self.D_logits, self.fm = self.discriminator(self.images, self.y, reuse=False)
+        self.G = self.generator(self.z, self.y, self.prev_bar)
+
 
         self.sampler = self.sampler(self.z, self.y, self.prev_bar)
         self.D_, self.D_logits_ , self.fm_ = self.discriminator(self.G, self.y, reuse=True)
-    
 
         self.d_sum = tf.summary.histogram("d", self.D)
         self.d__sum = tf.summary.histogram("d_", self.D_)
@@ -107,7 +104,6 @@ class MidiNet(object):
         self.mean_image_from_i = tf.reduce_mean(self.images, reduction_indices=(0))
         self.fm_g_loss2 = tf.mul(tf.nn.l2_loss(self.mean_image_from_g - self.mean_image_from_i), 0.01)
 
-
         self.d_loss_real_sum = tf.summary.scalar("d_loss_real", self.d_loss_real)
         self.d_loss_fake_sum = tf.summary.scalar("d_loss_fake", self.d_loss_fake)
 
@@ -116,9 +112,6 @@ class MidiNet(object):
 
         self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
         self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
-
-        
-        
 
         t_vars = tf.trainable_variables()
 
@@ -244,9 +237,9 @@ class MidiNet(object):
             tf.get_variable_scope().reuse_variables()
 
         if not self.y_dim:
-            h0 = lrelu(self.d_bn0(conv2d(x, 64, k_h=4, k_w=89, name='d_h0_conv')))
+            h0 = lrelu(self.d_bn0(conv2d(x, 64, k_h=2, k_w=128, name='d_h0_conv')))
             h1 = lrelu(self.d_bn1(conv2d(h0, 64, k_h=4, k_w=1, name='d_h1_conv')))
-            h2 = lrelu(self.d_bn2(conv2d(h1, 64, k_h=4, k_w=1, name='d_h2_conv')))
+            h2 = lrelu(self.d_bn2(conv2d(h1, 64, k_h=2, k_w=1, name='d_h2_conv')))
             h3 = linear(tf.reshape(h2, [self.batch_size, -1]), 1, 'd_h3_lin')
 
             return tf.nn.sigmoid(h3), h3
@@ -273,11 +266,10 @@ class MidiNet(object):
 
     def generator(self, z, y=None, prev_x = None):
         
-        h0_prev = lrelu(self.g_prev_bn0(conv2d(prev_x, 16, k_h=1, k_w=128,d_h=1, d_w=2, name='g_h0_prev_conv')))
+        h0_prev = lrelu(self.g_prev_bn0(conv2d(prev_x, 16, k_h=1, k_w=128, d_h=1, d_w=2, name='g_h0_prev_conv')))
         h1_prev = lrelu(self.g_prev_bn1(conv2d(h0_prev, 16, k_h=2, k_w=1, name='g_h1_prev_conv')))
         h2_prev = lrelu(self.g_prev_bn2(conv2d(h1_prev, 16, k_h=2, k_w=1, name='g_h2_prev_conv')))
         h3_prev = lrelu(self.g_prev_bn3(conv2d(h2_prev, 16, k_h=2, k_w=1, name='g_h3_prev_conv')))
-        
 
         yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
         z = tf.concat(1, [z, y])
@@ -291,7 +283,7 @@ class MidiNet(object):
         h1 = conv_cond_concat(h1, yb)
         h1 = conv_prev_concat(h1, h3_prev)
 
-        h2 = tf.nn.relu(self.g_bn2(deconv2d(h1, [self.batch_size, 4, 1, self.gf_dim * 2],k_h=2, k_w=1,d_h=2, d_w=2 ,name='g_h2')))
+        h2 = tf.nn.relu(self.g_bn2(deconv2d(h1, [self.batch_size, 4, 1, self.gf_dim * 2],k_h=2, k_w=1,d_h=2, d_w=2, name='g_h2')))
         h2 = conv_cond_concat(h2, yb)
         h2 = conv_prev_concat(h2, h2_prev)
 
@@ -311,7 +303,6 @@ class MidiNet(object):
         h1_prev = lrelu(self.g_prev_bn1(conv2d(h0_prev, 16, k_h=2, k_w=1, name='g_h1_prev_conv')))
         h2_prev = lrelu(self.g_prev_bn2(conv2d(h1_prev, 16, k_h=2, k_w=1, name='g_h2_prev_conv')))
         h3_prev = lrelu(self.g_prev_bn3(conv2d(h2_prev, 16, k_h=2, k_w=1, name='g_h3_prev_conv')))
-        
 
         yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
         z = tf.concat(1, [z, y])
@@ -338,6 +329,7 @@ class MidiNet(object):
         h4 = conv_prev_concat(h4, h0_prev)
 
         return tf.nn.sigmoid(deconv2d(h4, [self.batch_size, 16, 128, self.c_dim],k_h=1, k_w=128,d_h=1, d_w=2, name='g_h5'))
+
     def save(self, checkpoint_dir, step):
         model_name = "MidiNet.model"
         model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.output_w)
@@ -352,9 +344,9 @@ class MidiNet(object):
 
     def load(self, checkpoint_dir):
         print(" [*] Reading checkpoints...")
-
-        model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.output_w)
-        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
+        #
+        # model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.output_w)
+        # checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
@@ -363,4 +355,3 @@ class MidiNet(object):
             return True
         else:
             return False
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

@@ -42,11 +42,13 @@ def binary_cross_entropy(preds, targets, name=None):
         return tf.reduce_mean(-(targets * tf.log(preds + eps) +
                               (1. - targets) * tf.log(1. - preds + eps)))
 
+
 def conv_cond_concat(x, y):
     """Concatenate conditioning vector on feature map axis."""
     x_shapes = x.get_shape()
     y_shapes = y.get_shape()
     return tf.concat(3, [x, y*tf.ones([x_shapes[0], x_shapes[1], x_shapes[2], y_shapes[3]])])
+
 
 def conv_prev_concat(x, y):
     """Concatenate conditioning vector on feature map axis."""
@@ -57,6 +59,7 @@ def conv_prev_concat(x, y):
     else:
         print x_shapes[:2]
         print y_shapes[:2]
+
 
 def conv2d(input_, output_dim, 
            k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
@@ -70,6 +73,7 @@ def conv2d(input_, output_dim,
         conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
         return conv
+
 
 def deconv2d(input_, output_shape,
              k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
