@@ -85,7 +85,7 @@ def deconv2d(input_, output_shape,
         
         try:
             deconv = tf.nn.conv2d_transpose(input_, w, output_shape=output_shape,
-                                strides=[1, d_h, d_w, 1],padding = pad)
+                                            strides=[1, d_h, d_w, 1], padding = pad)
 
         # Support for verisons of TensorFlow before 0.7.0
         except AttributeError:

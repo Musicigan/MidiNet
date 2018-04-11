@@ -11,16 +11,17 @@ import tensorflow as tf
 
 flags = tf.app.flags
 flags.DEFINE_integer("epoch", 20, "Epoch to train [20]")
-flags.DEFINE_float("learning_rate", 0.00005, "Learning rate of for adam [0.0002]")
+flags.DEFINE_float("learning_rate", 1e-9, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_integer("batch_size", 72, "The size of batch [72]")
 flags.DEFINE_integer("output_w", 16, "The size of the output segs to produce [16]")
 flags.DEFINE_integer("output_h", 128, "The size of the output note to produce [128]")
 flags.DEFINE_integer("c_dim", 1, "Number of Midi track. [1]")
-flags.DEFINE_string("checkpoint_dir", "./training_log&checkpoint/checkpoint/default_72_16", "Directory for [checkpoint]")
+flags.DEFINE_string("checkpoint_dir", "/home/ashar/Documents/ece6254/project/data/checkpoint/",
+                    "Directory for [checkpoint]")
 flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
 flags.DEFINE_string("dataset", "MidiNet_v1", "The name of dataset ")
-flags.DEFINE_boolean("is_train", False, "True for training, False for testing [False]")
+flags.DEFINE_boolean("is_train", True, "True for training, False for testing [False]")
 flags.DEFINE_boolean("is_crop", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("generation_test", False, "True for generation_test, False for nothing [False]")
 flags.DEFINE_string("gen_dir", "gen", "Directory name to save the generate samples [samples]")
@@ -39,7 +40,7 @@ def main(_):
 
     with tf.Session() as sess:
         if FLAGS.dataset == 'MidiNet_v1':
-            model = MidiNet(sess,  batch_size=FLAGS.batch_size, y_dim=13, output_w=FLAGS.output_w,
+            model = MidiNet(sess,  batch_size=FLAGS.batch_size, y_dim=None, output_w=FLAGS.output_w,
                             output_h=FLAGS.output_h, c_dim=FLAGS.c_dim, dataset_name=FLAGS.dataset,
                             is_crop=FLAGS.is_crop,  checkpoint_dir=FLAGS.checkpoint_dir, sample_dir=FLAGS.sample_dir,
                             gen_dir=FLAGS.gen_dir)
