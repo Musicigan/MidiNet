@@ -121,7 +121,7 @@ class MidiNet(object):
         self.d_vars = [var for var in t_vars if 'd_' in var.name]
         self.g_vars = [var for var in t_vars if 'g_' in var.name]
 
-        self.saver = tf.train.Saver()
+        self.saver = tf.train.Saver(var_list=None, reshape=False, sharded=False, max_to_keep=20)
 
     def train(self, config):
 
@@ -150,9 +150,9 @@ class MidiNet(object):
         self.g_sum = tf.summary.merge([self.z_sum, self.d__sum,
                                        self.G_sum, self.d_loss_fake_sum, self.g_loss_sum])
         self.d_sum = tf.summary.merge([self.z_sum, self.d_sum, self.d_loss_real_sum, self.d_loss_sum])
-        self.writer = tf.summary.FileWriter("./logs", self.sess.graph)
+        self.writer = tf.summary.FileWriter(config.checkpoint_dir, self.sess.graph)
 
-        sample_z = np.random.normal(0, 1, size=(self.sample_size, self.z_dim))
+        sample_z = np.random.normal(170, 50, size=(self.sample_size, self.z_dim))
         sample_files = data_X[0:self.sample_size]
 
         save_images(data_X[np.arange(len(data_X))[:5]] * 1, [1, 5],
@@ -183,7 +183,7 @@ class MidiNet(object):
                 "MidiNet: A Convolutional Generative Adversarial Network for Symbolic-domain Music Generation"
                 However, the result are similar by using (0,1)
                 '''
-                batch_z = np.random.normal(0, 1, [config.batch_size, self.z_dim]) \
+                batch_z = np.random.normal(170, 50, [config.batch_size, self.z_dim]) \
                     .astype(np.float32)
 
                 # Update D network
@@ -305,8 +305,7 @@ class MidiNet(object):
         h4 = conv_cond_concat(h4, yb)
         h4 = conv_prev_concat(h4, h0_prev)
 
-        return tf.nn.sigmoid(
-            deconv2d(h4, [self.batch_size, 16, 128, self.c_dim], k_h=1, k_w=128, d_h=1, d_w=2, name='g_h5'))
+        return tf.nn.relu(deconv2d(h4, [self.batch_size, 16, 128, self.c_dim], k_h=1, k_w=128, d_h=1, d_w=2, name='g_h5'))
 
     def sampler(self, z, y=None, prev_x=None):
         tf.get_variable_scope().reuse_variables()
@@ -342,8 +341,7 @@ class MidiNet(object):
         h4 = conv_cond_concat(h4, yb)
         h4 = conv_prev_concat(h4, h0_prev)
 
-        return tf.nn.sigmoid(
-            deconv2d(h4, [self.batch_size, 16, 128, self.c_dim], k_h=1, k_w=128, d_h=1, d_w=2, name='g_h5'))
+        return tf.nn.relu(deconv2d(h4, [self.batch_size, 16, 128, self.c_dim], k_h=1, k_w=128, d_h=1, d_w=2, name='g_h5'))
 
     def save(self, checkpoint_dir, step):
         model_name = "MidiNet.model"

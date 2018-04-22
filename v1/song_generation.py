@@ -12,7 +12,7 @@ import tensorflow as tf
 
 flags = tf.app.flags
 flags.DEFINE_integer("epoch", 25, "Epoch to train [20]")
-flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
+flags.DEFINE_float("learning_rate", 0.002, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_integer("batch_size", 72, "The size of batch [72]")
 flags.DEFINE_integer("genre", 1, "The size of batch [72]")
@@ -21,7 +21,7 @@ flags.DEFINE_integer("output_w", 16, "The size of the output segs to produce [16
 flags.DEFINE_integer("output_h", 128, "The size of the output note to produce [128]")
 flags.DEFINE_integer("c_dim", 1, "Number of Midi track. [1]")
 flags.DEFINE_integer("num_batches", 200, "Number of batches conctenated in a midi file. [1]")
-flags.DEFINE_string("checkpoint_dir", "/media/ashar/Data/lmd_genre/lpd_5/midinet_ckpts_per_epoch/",
+flags.DEFINE_string("checkpoint_dir", "/media/ashar/Data/lmd_genre/lpd_5/midinet_ckpts_relu_samplenew_lr/",
                     "Directory for [checkpoint]")
 
 flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
@@ -66,7 +66,7 @@ def main(_):
 
             song_array[np.isnan(song_array)] = 0
             song_array[song_array >= 0.8] = 1
-            song_array[song_array < 0.8] = 0
+            song_array[song_array < 0.7] = 0
 
             piano_roll = np.expand_dims(song_array.squeeze(), axis=0)
             output_path = os.path.join(FLAGS.gen_dir, str(FLAGS.genre))
@@ -74,8 +74,8 @@ def main(_):
                 os.makedirs(output_path)
 
             write_piano_rolls_to_midi(piano_roll, program_nums=[FLAGS.num_program], is_drum=[False],
-                                      filename=output_path + '/test2.mid',
-                                      velocity=70, tempo=1000.0, beat_resolution=24)
+                                      filename=output_path + '/testrelu.mid',
+                                      velocity=70, tempo=100.0, beat_resolution=24)
 
 
 if __name__ == '__main__':

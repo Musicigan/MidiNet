@@ -11,13 +11,13 @@ import tensorflow as tf
 
 flags = tf.app.flags
 flags.DEFINE_integer("epoch", 25, "Epoch to train [20]")
-flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
+flags.DEFINE_float("learning_rate", 0.002, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_integer("batch_size", 72, "The size of batch [72]")
 flags.DEFINE_integer("output_w", 16, "The size of the output segs to produce [16]")
 flags.DEFINE_integer("output_h", 128, "The size of the output note to produce [128]")
 flags.DEFINE_integer("c_dim", 1, "Number of Midi track. [1]")
-flags.DEFINE_string("checkpoint_dir", "/media/ashar/Data/lmd_genre/lpd_5/midinet_ckpts_per_epoch/",
+flags.DEFINE_string("checkpoint_dir", "/media/ashar/Data/lmd_genre/lpd_5/midinet_ckpts_relu_samplenew_lr_002/",
                     "Directory for [checkpoint]")
 flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
 flags.DEFINE_string("dataset", "MidiNet_v1", "The name of dataset ")
