@@ -170,9 +170,9 @@ def sloppy_sample_labels():
     return sl_b_ch13
 
 
-def generation_test(sess, dcgan, config, option, prev_bar=None):
+def generation_test(sess, dcgan, config, genre_vec,  option, prev_bar=None):
   if option == 0:
-    sample_labels = sloppy_sample_labels()
+    sample_labels = genre_vec  # sloppy_sample_labels()
     prev_batch_images = np.zeros((72, 16, 128, 1))
     z_sample = np.random.normal(0, 1, size=(config.batch_size, dcgan.z_dim))
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y:sample_labels, dcgan.prev_bar:prev_batch_images})

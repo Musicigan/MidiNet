@@ -211,12 +211,12 @@ class MidiNet(object):
                 errG = self.g_loss.eval({self.images: batch_images, self.z: batch_z, self.y: batch_labels,
                                          self.prev_bar: prev_batch_images})
 
-                counter += 1
+
                 print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
                       % (epoch, idx, batch_idxs,
                          time.time() - start_time, errD_fake + errD_real, errG))
 
-                if np.mod(counter, 100) == 1:
+                if np.mod(counter, 500) == 1:
                     samples, d_loss, g_loss = self.sess.run(
                         [self.sampler, self.d_loss, self.g_loss],
                         feed_dict={self.z: sample_z, self.images: sample_images, self.y: sample_labels,
@@ -229,8 +229,10 @@ class MidiNet(object):
 
                     np.save('./{}/train_{:02d}_{:04d}'.format(config.gen_dir, epoch, idx), samples)
 
-                if np.mod(counter, len(data_X) / config.batch_size) == 0:
-                    self.save(config.checkpoint_dir, counter)
+                counter += 1
+                # if np.mod(counter, 500) == 0:
+            self.save(config.checkpoint_dir, epoch)
+
             print("Epoch: [%2d] time: %4.4f, d_loss: %.8f" \
                   % (epoch,
                      time.time() - start_time, (errD_fake + errD_real) / batch_idxs))
@@ -351,9 +353,15 @@ class MidiNet(object):
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
 
+        # if step < 100:
         self.saver.save(self.sess,
                         os.path.join(checkpoint_dir, model_name),
                         global_step=step)
+
+        # else:
+        #     self.saver.save(self.sess,
+        #                     os.path.join(checkpoint_dir, model_name),
+        #                     global_step=step, write_meta_graph=False)
 
     def load(self, checkpoint_dir):
         print(" [*] Reading checkpoints...")
