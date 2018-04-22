@@ -143,23 +143,30 @@ def make_gif(images, fname, duration=2, true_image=False):
 
 #a sloppy way of creating sample labels, which we generate 3 samples for 24 chord types each.
 def sloppy_sample_labels():
-    
-    sl_a = np.append(np.arange(24),np.arange(24))
-    sl_a = np.append(sl_a,np.arange(24))
-    sl_b = np.zeros((72, 24))
-    sl_b[np.arange(72), sl_a] = 1
-    sl_b_ch13=np.zeros((1,13))
-    next_ch13=np.zeros((1,13))
-    for i in range(0,len(sl_b)):
-        next_ch13=np.zeros((1,13))
-        if sl_b[i].argmax(axis=0) >= 12:
-            next_ch13[0][sl_b[i].argmax(axis=0)-12] = 1
-            next_ch13[0][12] = 1
-            sl_b_ch13 = np.append(sl_b_ch13,next_ch13,axis=0)
-        if sl_b[i].argmax(axis=0)  < 12:
-            next_ch13[0][sl_b[i].argmax(axis=0)] = 1
-            sl_b_ch13 = np.append(sl_b_ch13,next_ch13,axis=0)
-    sl_b_ch13 = sl_b_ch13[1:]
+    sl_b_ch13 = np.zeros((72, 4))
+    for i in range(0,4,72):
+        sl_b_ch13[i, 0:4] = [0, 0, 0, 1]
+        sl_b_ch13[i+1, 0:4] = [0, 0, 1, 0]
+        sl_b_ch13[i+2, 0:4] = [0, 1, 0, 0]
+        sl_b_ch13[i+3, 0:4] = [1, 0, 0, 0]
+
+    #
+    # sl_a = np.append(np.arange(24),np.arange(24))
+    # sl_a = np.append(sl_a,np.arange(24))
+    # sl_b = np.zeros((72, 24))
+    # sl_b[np.arange(72), sl_a] = 1
+    # sl_b_ch13=np.zeros((1,13))
+    # next_ch13=np.zeros((1,13))
+    # for i in range(0,len(sl_b)):
+    #     next_ch13=np.zeros((1,13))
+    #     if sl_b[i].argmax(axis=0) >= 12:
+    #         next_ch13[0][sl_b[i].argmax(axis=0)-12] = 1
+    #         next_ch13[0][12] = 1
+    #         sl_b_ch13 = np.append(sl_b_ch13,next_ch13,axis=0)
+    #     if sl_b[i].argmax(axis=0)  < 12:
+    #         next_ch13[0][sl_b[i].argmax(axis=0)] = 1
+    #         sl_b_ch13 = np.append(sl_b_ch13,next_ch13,axis=0)
+    # sl_b_ch13 = sl_b_ch13[1:]
     return sl_b_ch13
 
 

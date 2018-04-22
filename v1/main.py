@@ -10,8 +10,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 import tensorflow as tf
 
 flags = tf.app.flags
-flags.DEFINE_integer("epoch", 20, "Epoch to train [20]")
-flags.DEFINE_float("learning_rate", 1e-9, "Learning rate of for adam [0.0002]")
+flags.DEFINE_integer("epoch", 2, "Epoch to train [20]")
+flags.DEFINE_float("learning_rate", 1e-15, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_integer("batch_size", 72, "The size of batch [72]")
 flags.DEFINE_integer("output_w", 16, "The size of the output segs to produce [16]")
@@ -38,18 +38,19 @@ def main(_):
     if not os.path.exists(FLAGS.gen_dir):
         os.makedirs(FLAGS.gen_dir)
 
-    with tf.Session() as sess:
-        if FLAGS.dataset == 'MidiNet_v1':
-            model = MidiNet(sess,  batch_size=FLAGS.batch_size, y_dim=None, output_w=FLAGS.output_w,
-                            output_h=FLAGS.output_h, c_dim=FLAGS.c_dim, dataset_name=FLAGS.dataset,
-                            is_crop=FLAGS.is_crop,  checkpoint_dir=FLAGS.checkpoint_dir, sample_dir=FLAGS.sample_dir,
-                            gen_dir=FLAGS.gen_dir)
-        
-        if FLAGS.is_train:
-            model.train(FLAGS)
-        else:
-            model.load(FLAGS.checkpoint_dir)
-            generation_test(sess, model, FLAGS, option=0)
+    with tf.device('/gpu:0'):
+        with tf.Session() as sess:
+            if FLAGS.dataset == 'MidiNet_v1':
+                model = MidiNet(sess,  batch_size=FLAGS.batch_size, y_dim=4, output_w=FLAGS.output_w,
+                                output_h=FLAGS.output_h, c_dim=FLAGS.c_dim, dataset_name=FLAGS.dataset,
+                                is_crop=FLAGS.is_crop,  checkpoint_dir=FLAGS.checkpoint_dir, sample_dir=FLAGS.sample_dir,
+                                gen_dir=FLAGS.gen_dir)
+
+            if FLAGS.is_train:
+                model.train(FLAGS)
+            else:
+                model.load(FLAGS.checkpoint_dir)
+                generation_test(sess, model, FLAGS, option=0)
 
 if __name__ == '__main__':
     tf.app.run()
