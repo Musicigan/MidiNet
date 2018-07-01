@@ -1,4 +1,5 @@
-This repository contains the source code of [MdidNet : A Convolutional Generative Adversarial Network for Symbolic-domain Music Generation](https://arxiv.org/abs/1703.10847)
+This repository contains the source code of [MusiciGAN- yrics Based Music
+Composition] (https://drive.google.com/file/d/18k03Ttm62kRXihyboXPvNUIBEihLs2Bz/view?usp=sharing)
 
 <img src="Final Poster-1.png" height="350">
 
