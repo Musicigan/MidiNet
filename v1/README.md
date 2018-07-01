@@ -1,13 +1,7 @@
 This repository contains the source code of [MdidNet : A Convolutional Generative Adversarial Network for Symbolic-domain Music Generation](https://arxiv.org/abs/1703.10847)
 
+<img src="Final Poster-1.png" height="350">
 
-<img src="network_structure.png" height="350">
-
-## Follow-up research of MidiNet
-
-If you are interesting to the follow-up research of MidiNet, please check out [MuseGAN: Symbolic-domain Music Generation and Accompaniment with Multi-track Sequential Generative Adversarial Networks](https://salu133445.github.io/musegan/).
-
-Which we have a more detailed explanation of the data format (piano roll like feature with higher resolution compare to MidiNet).
 
 ## Notes
 
